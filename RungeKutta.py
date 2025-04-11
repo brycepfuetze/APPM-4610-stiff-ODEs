@@ -20,4 +20,4 @@ def RK4(a, b, h, ya, eval_f, params):
         k4 = h * eval_f(tj + h, rk + k3, params)
         yapp[[jj], :, :, :] = rk + 1 / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
 
-     return (yapp, t)
+     return t, yapp

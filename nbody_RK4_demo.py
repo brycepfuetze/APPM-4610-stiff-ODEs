@@ -1,25 +1,21 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from RungeKutta import RK4
-from EOM import nbody_EOM_rk4
-
-mu = 32930E9
+from System import System
+from Object import Object
 
 G = 6.6743E-11 # Gravitational constant
+mu = 32930E9 # Gravtitational parameter for planet
 
-M = np.diag([mu / G, 100]) # Object masses
+system = System('sys', G)
 
-r = np.array([[0, 0, 0], [6558.9E3, 3660.8E3, -10282.0E3]]) # Initial positions
-rp = np.array([[0, 0, 0], [1.5525E3, -0.1746E3, 0.5038E3]]) # Initial velocities
+planet = Object('planet', mu / G, [0, 0, 0], [0, 0, 0])
+satellite = Object('satellite', 100, [6558.9E3, 3660.8E3, -10282.0E3], [1.5525E3, -0.1746E3, 0.5038E3])
 
-R0 = np.array([r, rp])
+system.add_object(planet)
+system.add_object(satellite)
 
-params = {'M': M, 'G': G}
-
-yapp, t = RK4(0, 53054, 1E3, R0, nbody_EOM_rk4, params)
-
-yapp = yapp[:, 0, :, :]
+_, yapp = system.propagate_system_rk4(0, 53054, 1E3)
 
 r1 = yapp[:, 0, :]
 r2 = yapp[:, 1, :]
