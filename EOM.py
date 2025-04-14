@@ -20,9 +20,9 @@ def nbody_EOM_rk4(_, R, params):
         for j in range(i):
             rinv[i, j] = mag_cube(r[i, :], r[j, :])
 
-    P = M @ R
+    rinv = rinv + rinv.T
 
-    S = P + P.T
+    mr_quot = rinv @ M
 
     X = np.tile(r[:, 0], (N, 1))
     Y = np.tile(r[:, 1], (N, 1))
@@ -32,9 +32,9 @@ def nbody_EOM_rk4(_, R, params):
     dy = Y.T - Y
     dz = Z.T - Z
 
-    AX = G * np.einsum('ij,ji->i', S, dx)
-    AY = G * np.einsum('ij,ji->i', S, dy)
-    AZ = G * np.einsum('ij,ji->i', S, dz)
+    AX = G * np.einsum('ij,ji->i', mr_quot, dx)
+    AY = G * np.einsum('ij,ji->i', mr_quot, dy)
+    AZ = G * np.einsum('ij,ji->i', mr_quot, dz)
 
     rpp = np.vstack((AX, AY, AZ)).T
 
