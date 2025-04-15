@@ -10,13 +10,15 @@ def get_initial_data_horizons(id, location, epoch):
 
     obj = Horizons(id=id, location=location, epochs=epoch)
 
-    x = obj.vectors().columns['x'].to(u.m).value[0]
-    y = obj.vectors().columns['y'].to(u.m).value[0]
-    z = obj.vectors().columns['z'].to(u.m).value[0]
+    vec = obj.vectors().columns
 
-    vx = obj.vectors().columns['vx'].to(u.m / u.s).value[0]
-    vy = obj.vectors().columns['vy'].to(u.m / u.s).value[0]
-    vz = obj.vectors().columns['vz'].to(u.m / u.s).value[0]
+    x = vec['x'].to(u.m).value[0]
+    y = vec['y'].to(u.m).value[0]
+    z = vec['z'].to(u.m).value[0]
+
+    vx = vec['vx'].to(u.m / u.s).value[0]
+    vy = vec['vy'].to(u.m / u.s).value[0]
+    vz = vec['vz'].to(u.m / u.s).value[0]
 
     r0 = np.array([x, y, z])
     v0 = np.array([vx, vy, vz])
