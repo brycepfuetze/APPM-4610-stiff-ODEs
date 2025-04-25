@@ -1,7 +1,7 @@
 import numpy as np
 
 def mag_cube(u, v):
-    return np.pow(np.linalg.norm(u - v), -3)
+    return np.power(np.linalg.norm(u - v), -3)
 
 def nbody_EOM_rk4(_, R, params):
     M = params['M']
