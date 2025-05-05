@@ -5,20 +5,34 @@ import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-# gravitational constant (m^3/kg/s^2)
-#G = 6.674e-11
-G = 1.0
-
 np.seterr('raise')
 
-# masses (Sun - Earth)
+# Parameters based on this paper:
+# https://arxiv.org/pdf/astro-ph/0009058.pdf
+# The parameter provided assume G = 1, all m = 1, and speicfies starting locations and velocities
+
+G = 1.0
+# masses
 m = np.array([1, 1, 1])
 # initial conditions
 v1 =    0.3962186234
 v2 =   0.5086826315
+
+x1init = -1
+x2init = 1
+
+perturbation_factor = 0.05
+np.random.seed(40)
+
+# lets create some random perturbations
+v1 = v1 * np.random.uniform(1 - perturbation_factor, 1 + perturbation_factor)
+v2 = v2 * np.random.uniform(1 - perturbation_factor, 1 + perturbation_factor)
+x1init = x1init * np.random.uniform(1 - perturbation_factor, 1 + perturbation_factor)
+x2init = x2init * np.random.uniform(1 - perturbation_factor, 1 + perturbation_factor)
+
 T =  96.4358796119
 
-x0 = np.array([[-1,0], [1,0], [0,0]])
+x0 = np.array([[x1init,0], [x2init,0], [0,0]])
 v0 = np.array([[v1,v2], [v1,v2], [-2*v1, -2*v2]])
 
 
@@ -63,13 +77,7 @@ def verlet(m, x0, v0, tend, h, sampling):
     
     return [x, v]
 
-# day_s = 60*60*24
-# year_s = day_s * 365
-# tend = day_s*365*100
-# tstep = day_s
-# sampling = 512
-# AU = 149578706600
-
+# these you need to play with to make the integration stable
 N = 10000
 tend = T/8
 tstep = T / N
@@ -120,7 +128,7 @@ fig = go.Figure(
 
 fig.update_layout(
     width=1200, height=700,
-    title_text="Orbit Animation", title_x=0.5,
+    title_text="Orbit Animation with 5% Perturbation", title_x=0.5,
     updatemenus=[
         dict(
             type="buttons",
