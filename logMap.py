@@ -11,7 +11,10 @@ def log_map(A, x0):
 
 # set ICs, can make A a vector if you want!
 A = [3.9]
-x0 = [0.6875, 0.6874, 0.6876]
+x0 = [0.6874, 0.6875, 0.6876]
+
+# A = [3.2]
+# x0 = [0.6874, 0.6875, 0.6876]
 
 # loop over A and x0 vectors
 data = []
@@ -29,7 +32,7 @@ for a in A:
 df = pd.DataFrame(data)
 
 # plot!!!
-fig = px.line(df, x="Iteration", y="Value", color="x0", facet_row="A", labels={"x0": "Initial x0"}, title="Logistic Map")
+fig = px.line(df, x="Iteration", y="Value", color="x0", labels={"x0": "Initial x0"}, title="Logistic Map - A = " + str(A[0]))
 
-fig.update_layout(height=400 * len(A))
+fig.update_layout(height=400 * len(A), width = 1000)
 fig.show()
