@@ -44,7 +44,7 @@ def verlet_step(m, x, v, h):
 
 # perform verlet timestepping
 def verlet(m, x0, v0, tend, h, sampling):
-    N = int(tend/h/sampling)
+    N = int(np.ceil(tend/h/sampling))
     x = np.zeros((N, x0.shape[0], x0.shape[1]))
     v = np.zeros((N, x0.shape[0], x0.shape[1]))
 
@@ -133,47 +133,47 @@ def energy(m, xs, vs):
     
     return E
 
+if __name__ == "__main__":
+    day_s = 60*60*24
+    year_s = day_s * 365
+    tend = day_s*365*10000
+    tstep = day_s
+    sampling = 512
+    AU = 149578706600
+    t = np.arange(0, int(tend/(tstep*sampling))*tstep*sampling, tstep*sampling)
 
-day_s = 60*60*24
-year_s = day_s * 365
-tend = day_s*365*10000
-tstep = day_s
-sampling = 512
-AU = 149578706600
-t = np.arange(0, int(tend/(tstep*sampling))*tstep*sampling, tstep*sampling)
+    fig = plt.figure()
+    gs0 = gridspec.GridSpec(1, 2, figure=fig)
+    gs00 = gridspec.GridSpecFromSubplotSpec(2, 2, subplot_spec=gs0[1])
 
-fig = plt.figure()
-gs0 = gridspec.GridSpec(1, 2, figure=fig)
-gs00 = gridspec.GridSpecFromSubplotSpec(2, 2, subplot_spec=gs0[1])
+    ax0 = fig.add_subplot(gs0[0])
 
-ax0 = fig.add_subplot(gs0[0])
+    methods = [verlet, euler, rk2, rk4]
+    method_names = ["Verlet", "Euler", "RK2", "RK4"]
+    colors = ["tab:blue", "tab:orange", "tab:green", "tab:red"]
 
-methods = [verlet, euler, rk2, rk4]
-method_names = ["Verlet", "Euler", "RK2", "RK4"]
-colors = ["tab:blue", "tab:orange", "tab:green", "tab:red"]
+    for i in range(len(methods)):
+        method = methods[i]
+        name = method_names[i]
+        print(name)
 
-for i in range(len(methods)):
-    method = methods[i]
-    name = method_names[i]
-    print(name)
+        [x, v] = method(m, x0, v0, tend, tstep, sampling)
+        ax = fig.add_subplot(gs00[i])
 
-    [x, v] = method(m, x0, v0, tend, tstep, sampling)
-    ax = fig.add_subplot(gs00[i])
+        ax.plot(x[:,1,0]/AU, x[:,1,1]/AU, color=colors[i])
+        ax.grid()
+        if i > 1:
+            ax.set_xlabel("x [AU]")
+        if i == 0 or i == 2:
+            ax.set_ylabel("y [AU]")
 
-    ax.plot(x[:,1,0]/AU, x[:,1,1]/AU, color=colors[i])
-    ax.grid()
-    if i > 1:
-        ax.set_xlabel("x [AU]")
-    if i == 0 or i == 2:
-        ax.set_ylabel("y [AU]")
+        E = energy(m, x, v)
 
-    E = energy(m, x, v)
+        ax0.semilogy(t/year_s, np.abs(E-E[0]), label=name, color=colors[i])
 
-    ax0.semilogy(t/year_s, np.abs(E-E[0]), label=name, color=colors[i])
-
-ax0.set_xlabel("Time [yr]")
-ax0.set_ylabel("Energy Error [J]")
-ax0.legend()
-ax0.grid()
-#plt.ylim([1e31, 1e34])
-plt.show()
+    ax0.set_xlabel("Time [yr]")
+    ax0.set_ylabel("Energy Error [J]")
+    ax0.legend()
+    ax0.grid()
+    #plt.ylim([1e31, 1e34])
+    plt.show()

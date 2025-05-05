@@ -1,3 +1,5 @@
+import numpy as np
+
 class Object:
     def __init__(self, name, m, r0, v0):
         self.name = name
@@ -9,8 +11,8 @@ class Object:
         return self.m
 
     def get_r0(self):
-        return self.r0
+        return self.r0.flatten()
     
     def get_v0(self):
-        return self.v0
+        return self.v0.flatten()
     

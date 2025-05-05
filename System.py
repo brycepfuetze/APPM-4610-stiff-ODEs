@@ -2,6 +2,7 @@ import numpy as np
 
 from RungeKutta import RK4
 from EOM import nbody_EOM_rk4
+from verlet import verlet, rk4
 
 class System:
     def __init__(self, name, G):
@@ -47,5 +48,19 @@ class System:
         t, yapp = RK4(a, b, h, R0, nbody_EOM_rk4, params)
 
         yapp = yapp[:, 0, :, :]
+
+        return t, yapp
+    
+    def propagate_system_verlet(self, a, b, h):
+        M = self.gen_mass_mat()
+        R0 = self.gen_init_cond()
+
+        m = np.diag(M)
+        x0 = R0[0, :, :]
+        v0 = R0[1, :, :]
+
+        t = np.arange(a, b, h)
+        
+        yapp, _ = verlet(m, x0, v0, b - a, h, 1)
 
         return t, yapp
